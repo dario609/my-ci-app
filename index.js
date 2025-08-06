@@ -1,4 +1,4 @@
 const express = require('express');
 const app = express();
-app.get('/', (req, res) => res.send('Hello Genkins!'));
+app.get('/', (req, res) => res.send('Hello Hello Genkins!'));
 module.exports = app;
