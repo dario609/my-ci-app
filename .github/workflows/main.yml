@@ -38,11 +38,9 @@ jobs:
             npm --version
             
             # Create and clean app directory
+            rm -rf /home/ec2-user/my-app
             mkdir -p /home/ec2-user/my-app
             cd /home/ec2-user/my-app
-            
-            # Remove existing content if any (except hidden files like .env)
-            find . -maxdepth 1 ! -name '.' ! -name '..' ! -name '.*' -exec rm -rf {} +
             
             # Clone repository
             git clone https://github.com/dario609/my-ci-app.git .
