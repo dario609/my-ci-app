@@ -22,7 +22,38 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}          
           port: 22
           script: |
-            cd /home/ec2-user/my-app               
-            git pull origin master                 
+            # Install required dependencies
+            sudo yum update -y
+            sudo yum install -y git
+            
+            # Install Node.js (using NodeSource for latest version)
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -
+              sudo yum install -y nodejs
+            fi
+            
+            # Verify installations
+            git --version
+            node --version
+            npm --version
+            
+            # Create app directory if it doesn't exist
+            mkdir -p /home/ec2-user/my-app
+            
+            # Navigate to app directory and deploy
+            cd /home/ec2-user/my-app
+            
+            # Clone repository if it doesn't exist, otherwise pull updates
+            if [ ! -d .git ]; then
+              git clone https://github.com/your-repo.git .
+            else
+              git fetch origin
+              git reset --hard origin/master
+            fi
+            
+            # Install dependencies and test
             npm install
             npm test
+            
+            # Optional: Restart your application if needed
+            # pm2 restart all || (npm start && pm2 save && pm2 startup)
