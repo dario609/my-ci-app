@@ -14,15 +14,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to EC2
+      - name: Deploy to Amazon Linux EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ec2-user                        # ✅ Amazon Linux default
+          key: ${{ secrets.EC2_SSH_KEY }}          # ✅ Must be OpenSSH format
           port: 22
           script: |
-            cd /home/ubuntu/my-app
-            git pull origin master
+            cd /home/ec2-user/my-app               # ✅ Update if your app folder is elsewhere
+            git pull origin master                 # ✅ EC2 must have GitHub access
             npm install
-            pm2 restart app  # or your restart command
+            npm test
