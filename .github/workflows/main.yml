@@ -45,7 +45,7 @@ jobs:
             
             # Clone repository if it doesn't exist, otherwise pull updates
             if [ ! -d .git ]; then
-              git clone https://github.com/your-repo.git .
+              git clone https://github.com/dario609/my-ci-app.git .
             else
               git fetch origin
               git reset --hard origin/master
@@ -57,3 +57,5 @@ jobs:
             
             # Optional: Restart your application if needed
             # pm2 restart all || (npm start && pm2 save && pm2 startup)
+
+          
