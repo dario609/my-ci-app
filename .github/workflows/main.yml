@@ -55,7 +55,6 @@ jobs:
             npm install
             npm test
             
-            # Optional: Restart your application if needed
-            # pm2 restart all || (npm start && pm2 save && pm2 startup)
+      
 
           
