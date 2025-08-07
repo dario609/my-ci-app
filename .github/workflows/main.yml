@@ -18,33 +18,44 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user                       
-          key: ${{ secrets.EC2_SSH_KEY }}          
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            # Install required dependencies
+            # Update and install required tools
             sudo yum update -y
             sudo yum install -y git
-            
-            # Install Node.js (using NodeSource for latest version)
+
+            # Install Node.js if not already installed
             if ! command -v node &> /dev/null; then
               curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -
               sudo yum install -y nodejs
             fi
-            
-            # Verify installations
-            git --version
-            node --version
-            npm --version
-            
-            # Create and clean app directory
-            rm -rf /home/ec2-user/my-app
-            mkdir -p /home/ec2-user/my-app
-            cd /home/ec2-user/my-app
-            
-            # Clone repository
+
+            # Install pm2 globally if not already installed
+            if ! command -v pm2 &> /dev/null; then
+              sudo npm install -g pm2
+            fi
+
+            # Setup and clean app directory
+            APP_DIR="/home/ec2-user/my-app"
+            if [ -d "$APP_DIR" ]; then
+              rm -rf "$APP_DIR"
+            fi
+            mkdir -p "$APP_DIR"
+            cd "$APP_DIR"
+
+            # Clone and set up app
             git clone https://github.com/dario609/my-ci-app.git .
-            
-            # Install dependencies and test
             npm install
             npm test
+
+            # Restart app using pm2
+            if pm2 list | grep -q "my-app"; then
+              pm2 reload my-app
+            else
+              pm2 start server.js --name "my-app"
+            fi
+
+            # Save pm2 state
+            pm2 save
